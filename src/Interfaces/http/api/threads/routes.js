@@ -1,4 +1,4 @@
-const routes = (handler) => ([
+const routes = (handler) => [
   {
     method: 'POST',
     path: '/threads',
@@ -14,7 +14,15 @@ const routes = (handler) => ([
       auth: 'forumapi_jwt',
       handler: handler.postCommentHandler,
     },
-  }
-]);
+  },
+  {
+    method: 'DELETE',
+    path: '/threads/{threadId}/comments/{commentId}',
+    options: {
+      auth: 'forumapi_jwt',
+      handler: handler.deleteCommentHandler,
+    },
+  },
+];
 
 module.exports = routes;

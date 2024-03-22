@@ -1,11 +1,12 @@
 const pool = require('../../database/postgres/pool');
+const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper');
 const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const AuthenticationTableTestHelper = require('../../../../tests/AuthenticationsTableTestHelper');
 const container = require('../../container');
 const createServer = require('../createServer');
 
-describe('/threads endpoint', () => {
+describe('/threads/{threadId}/comments endpoint', () => {
   beforeAll(async () => {
     const server = await createServer(container);
     await server.inject({
@@ -25,16 +26,16 @@ describe('/threads endpoint', () => {
   });
 
   afterEach(async () => {
+    await CommentsTableTestHelper.cleanTable();
     await ThreadsTableTestHelper.cleanTable();
     await AuthenticationTableTestHelper.cleanTable();
   });
 
-  describe('when POST /threads', () => {
-    it('should response 201 and persisted thread', async () => {
+  describe('when POST /threads/{threadId}/comments', () => {
+    it('should response 201 and persisted comment', async () => {
       // Arrange
       const requestPayload = {
-        title: 'new thread',
-        body: 'content',
+        content: 'new comment',
       };
       const server = await createServer(container);
 
@@ -48,27 +49,41 @@ describe('/threads endpoint', () => {
       });
       const responseLoginJson = JSON.parse(responseLogin.payload);
 
+      const responseThread = await server.inject({
+        method: 'POST',
+        url: '/threads',
+        payload: {
+          title: 'new thread',
+          body: 'content',
+        },
+        headers: {
+          Authorization: `Bearer ${responseLoginJson.data.accessToken}`,
+        },
+      });
+      const responseThreadJson = JSON.parse(responseThread.payload);
+
       // Action
       const response = await server.inject({
         method: 'POST',
-        url: '/threads',
+        url: `/threads/${responseThreadJson.data.addedThread.id}/comments`,
         payload: requestPayload,
         headers: {
           Authorization: `Bearer ${responseLoginJson.data.accessToken}`,
         },
       });
 
-      // Assert
       const responseJson = JSON.parse(response.payload);
       expect(response.statusCode).toEqual(201);
       expect(responseJson.status).toEqual('success');
-      expect(responseJson.data.addedThread).toBeDefined();
+      expect(responseJson.data.addedComment).toBeDefined();
     });
+  });
 
-    it('should response 400 when request payload not contain needed property', async () => {
+  describe('when DELETE /threads/{threadId}/comments/{commentId}', () => {
+    it('should response 200 and deleted comment', async () => {
       // Arrange
       const requestPayload = {
-        title: 'new thread',
+        content: 'new comment',
       };
       const server = await createServer(container);
 
@@ -82,76 +97,41 @@ describe('/threads endpoint', () => {
       });
       const responseLoginJson = JSON.parse(responseLogin.payload);
 
-      // Action
-      const response = await server.inject({
+      const responseThread = await server.inject({
         method: 'POST',
         url: '/threads',
-        payload: requestPayload,
-        headers: {
-          Authorization: `Bearer ${responseLoginJson.data.accessToken}`,
-        },
-      });
-
-      // Assert
-      const responseJson = JSON.parse(response.payload);
-      expect(response.statusCode).toEqual(400);
-      expect(responseJson.status).toEqual('fail');
-      expect(responseJson.message).toEqual('tidak dapat membuat thread baru karena properti yang dibutuhkan tidak ada');
-    });
-
-    it('should response 400 when request payload not meet data type specification', async () => {
-      // Arrange
-      const requestPayload = {
-        title: 'new thread',
-        body: 123,
-        owner: 'user-123',
-      };
-      const server = await createServer(container);
-
-      const responseLogin = await server.inject({
-        method: 'POST',
-        url: '/authentications',
         payload: {
-          username: 'rizky',
-          password: '12345',
+          title: 'new thread',
+          body: 'content',
+        },
+        headers: {
+          Authorization: `Bearer ${responseLoginJson.data.accessToken}`,
         },
       });
-      const responseLoginJson = JSON.parse(responseLogin.payload);
+      const responseThreadJson = JSON.parse(responseThread.payload);
 
-      // Action
-      const response = await server.inject({
+      const responseComment = await server.inject({
         method: 'POST',
-        url: '/threads',
+        url: `/threads/${responseThreadJson.data.addedThread.id}/comments`,
         payload: requestPayload,
         headers: {
           Authorization: `Bearer ${responseLoginJson.data.accessToken}`,
         },
       });
-
-      // Assert
-      const responseJson = JSON.parse(response.payload);
-      expect(response.statusCode).toEqual(400);
-      expect(responseJson.status).toEqual('fail');
-      expect(responseJson.message).toEqual('tidak dapat membuat thread baru karena tipe data tidak sesuai');
-    });
-
-    it('should response 401 when request not contain access token', async () => {
-      // Arrange
-      const requestPayload = {
-        title: 'new thread',
-        body: 'content',
-      };
-      const server = await createServer(container);
+      const responseCommentJson = JSON.parse(responseComment.payload);
 
       // Action
       const response = await server.inject({
-        method: 'POST',
-        url: '/threads',
-        payload: requestPayload,
+        method: 'DELETE',
+        url: `/threads/${responseThreadJson.data.addedThread.id}/comments/${responseCommentJson.data.addedComment.id}`,
+        headers: {
+          Authorization: `Bearer ${responseLoginJson.data.accessToken}`,
+        },
       });
 
-      // Assert
-      expect(response.statusCode).toEqual(401);
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(200);
+      expect(responseJson.status).toEqual('success');
     });
   });
 });
