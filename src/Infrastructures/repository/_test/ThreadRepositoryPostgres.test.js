@@ -41,5 +41,27 @@ describe('ThreadRepositoryPostgres', () => {
       }));
     });
   });
-  
+
+  describe('verifyAvailableThread function', () => {
+    it('should throw NotFoundError when thread not available', async () => {
+      // Arrange
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
+
+      // Action & Assert
+      await expect(threadRepositoryPostgres.verifyAvailableThread('thread-123'))
+        .rejects.toThrowError('Thread tidak ditemukan');
+    });
+
+    it('should not throw NotFoundError when thread available', async () => {
+      // Arrange
+      await UsersTableTestHelper.addUser({ id: 'user-123' });
+      await ThreadsTableTestHelper.addThread({ id: 'thread-123', owner: 'user-123' });
+
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
+
+      // Action & Assert
+      await expect(threadRepositoryPostgres.verifyAvailableThread('thread-123'))
+        .resolves.not.toThrowError('Thread tidak ditemukan');
+    });
+  });
 });
