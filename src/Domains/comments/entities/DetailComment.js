@@ -11,7 +11,7 @@ class DetailComment {
   }
 
   _verifyPayload({ id, username, date, replies, content, is_deleted }) {
-    if (!id || !username || !date || !replies || !content || !is_deleted) {
+    if (!id || !username || !date || !replies || !content || is_deleted === undefined) {
       throw new Error('DETAIL_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY');
     }
 

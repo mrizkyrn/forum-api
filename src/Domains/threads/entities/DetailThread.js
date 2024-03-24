@@ -2,9 +2,9 @@ class DetailThread {
   constructor(payload) {
     this._verifyPayload(payload);
 
-    const { threadId, title, body, date, username, comments } = payload;
+    const { id, title, body, date, username, comments } = payload;
 
-    this.threadId = threadId;
+    this.id = id;
     this.title = title;
     this.body = body;
     this.date = date;
@@ -12,13 +12,13 @@ class DetailThread {
     this.comments = comments;
   }
 
-  _verifyPayload({ threadId, title, body, date, username, comments }) {
-    if (!threadId || !title || !body || !date || !username || !comments) {
+  _verifyPayload({ id, title, body, date, username, comments }) {
+    if (!id || !title || !body || !date || !username || !comments) {
       throw new Error('DETAIL_THREAD.NOT_CONTAIN_NEEDED_PROPERTY');
     }
 
     if (
-      typeof threadId !== 'string' ||
+      typeof id !== 'string' ||
       typeof title !== 'string' ||
       typeof body !== 'string' ||
       typeof date !== 'string' ||
