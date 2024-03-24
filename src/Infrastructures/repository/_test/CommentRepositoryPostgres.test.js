@@ -8,7 +8,8 @@ const CommentRepositoryPostgres = require('../CommentRepositoryPostgres');
 
 describe('CommentRepositoryPostgres', () => {
   beforeAll(async () => {
-    await UsersTableTestHelper.addUser({ id: 'user-123' });
+    await UsersTableTestHelper.addUser({ id: 'user-123', username: 'rizky' });
+    await UsersTableTestHelper.addUser({ id: 'user-124', username: 'ramadhan' });
     await ThreadsTableTestHelper.addThread({ id: 'thread-123' });
   });
 
@@ -68,7 +69,9 @@ describe('CommentRepositoryPostgres', () => {
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool);
 
       // Action & Assert
-      await expect(commentRepositoryPostgres.deleteCommentById('comment-123')).rejects.toThrowError('Komentar tidak ditemukan');
+      await expect(commentRepositoryPostgres.deleteCommentById('comment-123')).rejects.toThrowError(
+        'komentar tidak ditemukan'
+      );
     });
   });
 
@@ -80,7 +83,7 @@ describe('CommentRepositoryPostgres', () => {
 
       // Action & Assert
       await expect(commentRepositoryPostgres.verifyCommentOwner('comment-123', 'user-124')).rejects.toThrowError(
-        'Anda tidak berhak mengakses resource ini'
+        'anda tidak berhak mengakses resource ini'
       );
     });
 
@@ -91,7 +94,7 @@ describe('CommentRepositoryPostgres', () => {
 
       // Action & Assert
       await expect(commentRepositoryPostgres.verifyCommentOwner('comment-123', 'user-123')).resolves.not.toThrowError(
-        'Anda tidak berhak mengakses resource ini'
+        'anda tidak berhak mengakses resource ini'
       );
     });
 
@@ -101,10 +104,9 @@ describe('CommentRepositoryPostgres', () => {
 
       // Action & Assert
       await expect(commentRepositoryPostgres.verifyCommentOwner('comment-123', 'user-123')).rejects.toThrowError(
-        'Komentar tidak ditemukan'
+        'komentar tidak ditemukan'
       );
     });
-
   });
 
   describe('verifyAvailableComment function', () => {
@@ -114,7 +116,7 @@ describe('CommentRepositoryPostgres', () => {
 
       // Action & Assert
       await expect(commentRepositoryPostgres.verifyAvailableComment('comment-123')).rejects.toThrowError(
-        'Komentar tidak ditemukan'
+        'komentar tidak ditemukan'
       );
     });
 
@@ -125,8 +127,66 @@ describe('CommentRepositoryPostgres', () => {
 
       // Action & Assert
       await expect(commentRepositoryPostgres.verifyAvailableComment('comment-123')).resolves.not.toThrowError(
-        'Komentar tidak ditemukan'
+        'komentar tidak ditemukan'
       );
+    });
+  });
+
+  describe('getCommentsByThreadId function', () => {
+    it('should return comments by thread id correctly', async () => {
+      // Arrange
+      const date1 = new Date('2021-08-08T07:22:13.017Z');
+      const date2 = new Date('2021-08-08T07:23:13.017Z');
+      await CommentsTableTestHelper.addComment({
+        id: 'comment-123',
+        content: 'comment 1',
+        owner: 'user-123',
+        threadId: 'thread-123',
+        date: date1,
+        isDeleted: true,
+      });
+      await CommentsTableTestHelper.addComment({
+        id: 'comment-124',
+        content: 'comment 2',
+        owner: 'user-124',
+        threadId: 'thread-123',
+        date: date2,
+      });
+
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool);
+
+      // Action
+      const comments = await commentRepositoryPostgres.getCommentsByThreadId('thread-123');
+
+      // Assert
+      expect(comments).toHaveLength(2);
+      expect(comments).toStrictEqual([
+        {
+          id: 'comment-123',
+          username: 'rizky',
+          date: date1,
+          content: '**komentar telah dihapus**',
+          is_deleted: true,
+        },
+        {
+          id: 'comment-124',
+          username: 'ramadhan',
+          date: date2,
+          content: 'comment 2',
+          is_deleted: false,
+        },
+      ]);
+    });
+
+    it('should return empty array when no comment in thread', async () => {
+      // Arrange
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool);
+
+      // Action
+      const comments = await commentRepositoryPostgres.getCommentsByThreadId('thread-123');
+
+      // Assert
+      expect(comments).toHaveLength(0);
     });
   });
 });

@@ -33,7 +33,7 @@ class CommentRepositoryPostgres extends CommentRepository {
 
     const result = await this._pool.query(query);
     if (!result.rowCount) {
-      throw new InvariantError('Komentar tidak ditemukan');
+      throw new InvariantError('komentar tidak ditemukan');
     }
   }
 
@@ -46,11 +46,11 @@ class CommentRepositoryPostgres extends CommentRepository {
     const result = await this._pool.query(query);
 
     if (!result.rowCount) {
-      throw new InvariantError('Komentar tidak ditemukan');
+      throw new InvariantError('komentar tidak ditemukan');
     }
     const comment = result.rows[0];
     if (comment.owner !== owner) {
-      throw new AuthorizationError('Anda tidak berhak mengakses resource ini');
+      throw new AuthorizationError('anda tidak berhak mengakses resource ini');
     }
   }
 
@@ -63,8 +63,34 @@ class CommentRepositoryPostgres extends CommentRepository {
     const result = await this._pool.query(query);
 
     if (!result.rowCount) {
-      throw new NotFoundError('Komentar tidak ditemukan');
+      throw new NotFoundError('komentar tidak ditemukan');
     }
+  }
+
+  async getCommentsByThreadId(threadId) {
+    const query = {
+      text: `SELECT 
+        c.id AS id,
+        u.username AS username,
+        c.date AS date,
+        c.content AS content,
+        c.is_deleted AS is_deleted
+      FROM comments c
+      LEFT JOIN users u ON c.owner = u.id
+      WHERE c.thread_id = $1
+      ORDER BY c.date ASC`,
+      values: [threadId],
+    };
+
+    const result = await this._pool.query(query);
+
+    result.rows.forEach((row) => {
+      if (row.is_deleted) {
+        row.content = '**komentar telah dihapus**';
+      }
+    });
+
+    return result.rows;
   }
 }
 
