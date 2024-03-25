@@ -25,15 +25,16 @@ class CommentRepositoryPostgres extends CommentRepository {
     return new AddedComment({ ...result.rows[0] });
   }
 
-  async deleteCommentById(commentId) {
+  async deleteCommentById(threadId, commentId) {
     const query = {
-      text: 'UPDATE comments SET is_deleted = true WHERE id = $1',
-      values: [commentId],
+      text: 'UPDATE comments SET is_deleted = TRUE WHERE id = $1 AND thread_id = $2 RETURNING id',
+      values: [commentId, threadId],
     };
 
     const result = await this._pool.query(query);
+
     if (!result.rowCount) {
-      throw new InvariantError('komentar tidak ditemukan');
+      throw new NotFoundError('komentar tidak ditemukan');
     }
   }
 
@@ -46,8 +47,9 @@ class CommentRepositoryPostgres extends CommentRepository {
     const result = await this._pool.query(query);
 
     if (!result.rowCount) {
-      throw new InvariantError('komentar tidak ditemukan');
+      throw new NotFoundError('komentar tidak ditemukan');
     }
+
     const comment = result.rows[0];
     if (comment.owner !== owner) {
       throw new AuthorizationError('anda tidak berhak mengakses resource ini');

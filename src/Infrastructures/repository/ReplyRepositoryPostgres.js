@@ -1,3 +1,5 @@
+const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
+const NotFoundError = require('../../Commons/exceptions/NotFoundError');
 const AddedReply = require('../../Domains/replies/entities/AddedReply');
 const ReplyRepository = require('../../Domains/replies/ReplyRepository');
 
@@ -46,6 +48,50 @@ class ReplyRepositoryPostgres extends ReplyRepository {
     });
 
     return result.rows;
+  }
+
+  async deleteReplyById(threadId, commentId, replyId) {
+    const query = {
+      text: 'UPDATE replies SET is_deleted = true WHERE id = $1 AND thread_id = $2 AND comment_id = $3',
+      values: [replyId, threadId, commentId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new NotFoundError('balasan tidak ditemukan');
+    }
+  }
+
+  async verifyReplyAvailable(replyId) {
+    const query = {
+      text: 'SELECT id FROM replies WHERE id = $1',
+      values: [replyId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new NotFoundError('balasan tidak ditemukan');
+    }
+  }
+
+  async verifyReplyOwner(replyId, owner) {
+    const query = {
+      text: 'SELECT owner FROM replies WHERE id = $1',
+      values: [replyId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new NotFoundError('balasan tidak ditemukan');
+    }
+
+    const reply = result.rows[0];
+    if (reply.owner !== owner) {
+      throw new AuthorizationError('anda tidak berhak mengakses resource ini');
+    }
   }
 }
 

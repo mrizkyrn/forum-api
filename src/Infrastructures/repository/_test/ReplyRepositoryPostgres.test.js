@@ -102,4 +102,91 @@ describe('ReplyRepositoryPostgres', () => {
       ]);
     });
   });
+
+  describe('deleteReplyById function', () => {
+    it('should soft delete reply by id', async () => {
+      // Arrange
+      await RepliesTableTestHelper.addReply({
+        id: 'reply-123',
+        threadId: 'thread-123',
+        commentId: 'comment-123',
+      });
+
+      const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool);
+
+      // Action
+      await replyRepositoryPostgres.deleteReplyById('thread-123', 'comment-123', 'reply-123');
+
+      // Assert
+      const replies = await RepliesTableTestHelper.findRepliesById('reply-123');
+      expect(replies[0].is_deleted).toEqual(true);
+    });
+
+    it('should throw error when reply not available', async () => {
+      // Arrange
+      const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool);
+
+      // Action & Assert
+      await expect(replyRepositoryPostgres.deleteReplyById('thread-123', 'comment-123', 'reply-124')).rejects.toThrowError(
+        'balasan tidak ditemukan'
+      );
+    });
+  });
+
+  describe('verifyReplyAvailable function', () => {
+    it('should throw error when reply not available', async () => {
+      // Arrange
+      const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool);
+
+      // Action & Assert
+      await expect(replyRepositoryPostgres.verifyReplyAvailable('reply-123')).rejects.toThrowError(
+        'balasan tidak ditemukan'
+      );
+    });
+
+    it('should not throw error when reply available', async () => {
+      // Arrange
+      await RepliesTableTestHelper.addReply({ id: 'reply-123' });
+      const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool);
+
+      // Action & Assert
+      await expect(replyRepositoryPostgres.verifyReplyAvailable('reply-123')).resolves.not.toThrowError(
+        'balasan tidak ditemukan'
+      );
+    });
+  });
+
+  describe('verifyReplyOwner function', () => {
+    it('should throw error when reply not owned by owner', async () => {
+      // Arrange
+      await RepliesTableTestHelper.addReply({ id: 'reply-123', owner: 'user-123' });
+      const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool);
+
+      // Action & Assert
+      await expect(replyRepositoryPostgres.verifyReplyOwner('reply-123', 'user-124')).rejects.toThrowError(
+        'anda tidak berhak mengakses resource ini'
+      );
+    });
+
+    it('should not throw error when reply owned by owner', async () => {
+      // Arrange
+      await RepliesTableTestHelper.addReply({ id: 'reply-123', owner: 'user-123' });
+      const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool);
+
+      // Action & Assert
+      await expect(replyRepositoryPostgres.verifyReplyOwner('reply-123', 'user-123')).resolves.not.toThrowError(
+        'anda tidak berhak mengakses resource ini'
+      );
+    });
+
+    it('should throw error when reply not available', async () => {
+      // Arrange
+      const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool);
+
+      // Action & Assert
+      await expect(replyRepositoryPostgres.verifyReplyOwner('reply-123', 'user-123')).rejects.toThrowError(
+        'balasan tidak ditemukan'
+      );
+    });
+  });
 });

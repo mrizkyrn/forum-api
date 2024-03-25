@@ -57,7 +57,7 @@ describe('CommentRepositoryPostgres', () => {
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
 
       // Action
-      await commentRepositoryPostgres.deleteCommentById('comment-123');
+      await commentRepositoryPostgres.deleteCommentById('thread-123', 'comment-123');
 
       // Assert
       const comments = await CommentsTableTestHelper.findCommentsById('comment-123');
@@ -69,7 +69,7 @@ describe('CommentRepositoryPostgres', () => {
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool);
 
       // Action & Assert
-      await expect(commentRepositoryPostgres.deleteCommentById('comment-123')).rejects.toThrowError(
+      await expect(commentRepositoryPostgres.deleteCommentById('thread-123', 'comment-123')).rejects.toThrowError(
         'komentar tidak ditemukan'
       );
     });
