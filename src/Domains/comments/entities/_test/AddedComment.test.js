@@ -29,7 +29,7 @@ describe('a AddedComment entities', () => {
     const payload = {
       id: 'comment-123',
       content: 'new comment',
-      owner: 'user-123'
+      owner: 'user-123',
     };
 
     // Action

@@ -17,13 +17,11 @@ describe('AddCommentUseCase', () => {
       owner: useCasePayload.owner,
     });
 
-    // mock dependency
     const mockCommentRepository = new CommentRepository();
     const mockThreadRepository = {
       verifyAvailableThread: jest.fn(() => Promise.resolve()),
     };
 
-    // mock use case
     mockCommentRepository.addComment = jest.fn(() => Promise.resolve(expectedAddedComment));
 
     const addCommentUseCase = new AddCommentUseCase({

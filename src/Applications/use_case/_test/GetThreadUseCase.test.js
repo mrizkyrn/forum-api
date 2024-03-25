@@ -6,12 +6,31 @@ const ReplyRepository = require('../../../Domains/replies/ReplyRepository');
 const GetThreadUseCase = require('../GetThreadUseCase');
 
 describe('GetThreadUseCase', () => {
+  it('should throw error if use case payload not contain needed property', async () => {
+    // Arrange
+    const useCasePayload = {};
+    const getThreadUseCase = new GetThreadUseCase({});
+
+    // Action & Assert
+    await expect(getThreadUseCase.execute(useCasePayload)).rejects.toThrowError('GET_THREAD_USE_CASE.NOT_CONTAIN_NEEDED_PROPERTY');
+  });
+
+  it('should throw error if use case payload not meet data type specification', async () => {
+    // Arrange
+    const useCasePayload = {
+      threadId: 123,
+    };
+    const getThreadUseCase = new GetThreadUseCase({});
+
+    // Action & Assert
+    await expect(getThreadUseCase.execute(useCasePayload)).rejects.toThrowError('GET_THREAD_USE_CASE.PAYLOAD_NOT_MEET_DATA_TYPE_SPECIFICATION');
+  });
+
   it('should orchestrating the get thread action correctly', async () => {
     // Arrange
     const useCasePayload = {
       threadId: 'thread-123',
     };
-
     const expectedThread = new DetailThread({
       id: useCasePayload.threadId,
       title: 'judul thread',
@@ -20,7 +39,6 @@ describe('GetThreadUseCase', () => {
       username: 'dicoding',
       comments: [],
     });
-
     const expectedComments = [
       new DetailComment({
         id: 'comment-123',
@@ -40,12 +58,10 @@ describe('GetThreadUseCase', () => {
       }),
     ];
 
-    // mock dependency
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
     const mockReplyRepository = new ReplyRepository();
 
-    // mock use case
     mockThreadRepository.getThreadById = jest.fn(() => Promise.resolve(expectedThread));
     mockCommentRepository.getCommentsByThreadId = jest.fn(() => Promise.resolve(expectedComments));
     mockReplyRepository.getRepliesByCommentId = jest.fn(() => Promise.resolve([]));

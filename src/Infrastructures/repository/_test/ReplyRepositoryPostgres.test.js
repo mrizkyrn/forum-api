@@ -127,9 +127,9 @@ describe('ReplyRepositoryPostgres', () => {
       const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool);
 
       // Action & Assert
-      await expect(replyRepositoryPostgres.deleteReplyById('thread-123', 'comment-123', 'reply-124')).rejects.toThrowError(
-        'balasan tidak ditemukan'
-      );
+      await expect(
+        replyRepositoryPostgres.deleteReplyById('thread-123', 'comment-123', 'reply-124')
+      ).rejects.toThrowError('balasan tidak ditemukan');
     });
   });
 

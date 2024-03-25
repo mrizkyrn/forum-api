@@ -95,7 +95,7 @@ class ThreadsHandler {
   async deleteReplyHandler(request, h) {
     const { id: owner } = request.auth.credentials;
     const { threadId, commentId, replyId } = request.params;
-    
+
     const deleteReplyUseCase = this._container.getInstance(DeleteReplyUseCase.name);
     await deleteReplyUseCase.execute({ owner, threadId, commentId, replyId });
     return {

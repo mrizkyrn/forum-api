@@ -31,7 +31,7 @@ describe('a NewReply entities', () => {
       threadId: 'thread-123',
       commentId: 'comment-123',
       content: 'new comment',
-      owner: 'user-123'
+      owner: 'user-123',
     };
 
     // Action

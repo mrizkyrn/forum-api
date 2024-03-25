@@ -83,7 +83,7 @@ describe('ThreadRepositoryPostgres', () => {
     it('should return thread correctly', async () => {
       // Arrange
       await UsersTableTestHelper.addUser({ id: 'user-123', username: 'rizky' });
-      
+
       const date = new Date();
       await ThreadsTableTestHelper.addThread({
         id: 'thread-123',

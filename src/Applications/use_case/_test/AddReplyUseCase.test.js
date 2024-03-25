@@ -18,7 +18,6 @@ describe('AddReplyUseCase', () => {
       owner: useCasePayload.owner,
     });
 
-    // mock dependency
     const mockReplyRepository = new ReplyRepository();
     const mockThreadRepository = {
       verifyAvailableThread: jest.fn(() => Promise.resolve()),
@@ -27,7 +26,6 @@ describe('AddReplyUseCase', () => {
       verifyAvailableComment: jest.fn(() => Promise.resolve()),
     };
 
-    // mock use case
     mockReplyRepository.addReply = jest.fn(() => Promise.resolve(expectedAddedReply));
 
     const addReplyUseCase = new AddReplyUseCase({

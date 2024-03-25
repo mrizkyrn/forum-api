@@ -15,7 +15,13 @@ class DetailReply {
       throw new Error('DETAIL_REPLY.NOT_CONTAIN_NEEDED_PROPERTY');
     }
 
-    if (typeof id !== 'string' || typeof content !== 'string' || typeof date !== 'string' || typeof username !== 'string' || typeof is_deleted !== 'boolean') {
+    if (
+      typeof id !== 'string' ||
+      typeof content !== 'string' ||
+      typeof date !== 'string' ||
+      typeof username !== 'string' ||
+      typeof is_deleted !== 'boolean'
+    ) {
       throw new Error('DETAIL_REPLY.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }
   }

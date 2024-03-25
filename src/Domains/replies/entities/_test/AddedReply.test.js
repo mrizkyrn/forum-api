@@ -29,7 +29,7 @@ describe('a AddedReply entities', () => {
     const payload = {
       id: 'reply-123',
       content: 'new comment',
-      owner: 'user-123'
+      owner: 'user-123',
     };
 
     // Action

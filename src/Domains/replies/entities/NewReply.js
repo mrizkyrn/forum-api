@@ -24,7 +24,6 @@ class NewReply {
       throw new Error('NEW_REPLY.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }
   }
-
 }
 
 module.exports = NewReply;

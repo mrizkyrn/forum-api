@@ -29,7 +29,7 @@ describe('a AddedThread entities', () => {
     const payload = {
       id: 'thread-123',
       title: 'new thread',
-      owner: 'user-123'
+      owner: 'user-123',
     };
 
     // Action

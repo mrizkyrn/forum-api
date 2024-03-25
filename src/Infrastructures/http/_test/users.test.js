@@ -102,7 +102,9 @@ describe('/users endpoint', () => {
       const responseJson = JSON.parse(response.payload);
       expect(response.statusCode).toEqual(400);
       expect(responseJson.status).toEqual('fail');
-      expect(responseJson.message).toEqual('tidak dapat membuat user baru karena karakter username melebihi batas limit');
+      expect(responseJson.message).toEqual(
+        'tidak dapat membuat user baru karena karakter username melebihi batas limit'
+      );
     });
 
     it('should response 400 when username contain restricted character', async () => {
@@ -125,7 +127,9 @@ describe('/users endpoint', () => {
       const responseJson = JSON.parse(response.payload);
       expect(response.statusCode).toEqual(400);
       expect(responseJson.status).toEqual('fail');
-      expect(responseJson.message).toEqual('tidak dapat membuat user baru karena username mengandung karakter terlarang');
+      expect(responseJson.message).toEqual(
+        'tidak dapat membuat user baru karena username mengandung karakter terlarang'
+      );
     });
 
     it('should response 400 when username unavailable', async () => {
