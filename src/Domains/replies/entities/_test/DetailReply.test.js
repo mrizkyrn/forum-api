@@ -20,7 +20,7 @@ describe('a DetailReply entities', () => {
       content: 'abc',
       date: '2021-08-08T07:22:33.555Z',
       username: 'user',
-      is_deleted: 'true',
+      deleted: 'true',
     };
 
     // Action and Assert
@@ -32,19 +32,42 @@ describe('a DetailReply entities', () => {
     const payload = {
       id: 'reply-123',
       content: 'abc',
-      date: '2021-08-08T07:22:33.555Z',
+      date: new Date(),
       username: 'user',
-      is_deleted: true,
+      deleted: false,
     };
 
     // Action
-    const { id, content, date, username, is_deleted } = new DetailReply(payload);
+    const { id, content, date, username, deleted } = new DetailReply(payload);
 
     // Assert
     expect(id).toEqual(payload.id);
     expect(content).toEqual(payload.content);
     expect(date).toEqual(payload.date);
     expect(username).toEqual(payload.username);
-    expect(is_deleted).toEqual(payload.is_deleted);
+    expect(deleted).toEqual(payload.deleted);
+  });
+
+  it('should create DetailReply object correctly when deleted', () => {
+    // Arrange
+    const payload = {
+      id: 'reply-123',
+      content: 'abc',
+      date: new Date(),
+      username: 'user',
+      deleted: true,
+    };
+
+    const expectedContent = '**balasan telah dihapus**';
+
+    // Action
+    const { id, content, date, username, deleted } = new DetailReply(payload);
+
+    // Assert
+    expect(id).toEqual(payload.id);
+    expect(content).toEqual(expectedContent);
+    expect(date).toEqual(payload.date);
+    expect(username).toEqual(payload.username);
+    expect(deleted).toEqual(payload.deleted);
   });
 });

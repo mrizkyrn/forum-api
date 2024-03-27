@@ -34,7 +34,7 @@ describe('a DetailThread entities', () => {
       id: 'thread-123',
       title: 'new thread',
       body: 'content',
-      date: '2021-08-08T07:22:13.017Z',
+      date: new Date(),
       username: 'user',
       comments: [],
     };

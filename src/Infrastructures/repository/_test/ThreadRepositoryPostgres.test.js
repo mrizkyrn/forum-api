@@ -3,8 +3,9 @@ const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper');
 const NewThread = require('../../../Domains/threads/entities/NewThread');
 const AddedThread = require('../../../Domains/threads/entities/AddedThread');
-const pool = require('../../database/postgres/pool');
+const DetailThread = require('../../../Domains/threads/entities/DetailThread');
 const ThreadRepositoryPostgres = require('../ThreadRepositoryPostgres');
+const pool = require('../../database/postgres/pool');
 
 describe('ThreadRepositoryPostgres', () => {
   afterEach(async () => {
@@ -41,7 +42,7 @@ describe('ThreadRepositoryPostgres', () => {
           id: 'thread-123',
           title: newThread.title,
           owner: newThread.owner,
-        })
+        }),
       );
     });
   });
@@ -52,9 +53,9 @@ describe('ThreadRepositoryPostgres', () => {
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
 
       // Action & Assert
-      await expect(threadRepositoryPostgres.verifyAvailableThread('thread-123')).rejects.toThrowError(
-        'thread tidak ditemukan'
-      );
+      await expect(threadRepositoryPostgres.verifyAvailableThread('thread-123'))
+        .rejects
+        .toThrowError('thread tidak ditemukan');
     });
 
     it('should not throw NotFoundError when thread available', async () => {
@@ -65,9 +66,9 @@ describe('ThreadRepositoryPostgres', () => {
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
 
       // Action & Assert
-      await expect(threadRepositoryPostgres.verifyAvailableThread('thread-123')).resolves.not.toThrowError(
-        'thread tidak ditemukan'
-      );
+      await expect(threadRepositoryPostgres.verifyAvailableThread('thread-123'))
+        .resolves.not
+        .toThrowError('thread tidak ditemukan');
     });
   });
 
@@ -77,7 +78,9 @@ describe('ThreadRepositoryPostgres', () => {
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
 
       // Action & Assert
-      await expect(threadRepositoryPostgres.getThreadById('thread-123')).rejects.toThrowError('thread tidak ditemukan');
+      await expect(threadRepositoryPostgres.getThreadById('thread-123'))
+        .rejects
+        .toThrowError('thread tidak ditemukan');
     });
 
     it('should return thread correctly', async () => {
@@ -99,13 +102,14 @@ describe('ThreadRepositoryPostgres', () => {
       const thread = await threadRepositoryPostgres.getThreadById('thread-123');
 
       // Assert
-      expect(thread).toStrictEqual({
+      expect(thread).toStrictEqual(new DetailThread({
         id: 'thread-123',
         title: 'new thread',
         body: 'content',
         date,
         username: 'rizky',
-      });
+        comments: [],
+      }));
     });
   });
 });

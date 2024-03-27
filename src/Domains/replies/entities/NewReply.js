@@ -16,10 +16,10 @@ class NewReply {
     }
 
     if (
-      typeof threadId !== 'string' ||
-      typeof commentId !== 'string' ||
-      typeof content !== 'string' ||
-      typeof owner !== 'string'
+      typeof threadId !== 'string'
+      || typeof commentId !== 'string'
+      || typeof content !== 'string'
+      || typeof owner !== 'string'
     ) {
       throw new Error('NEW_REPLY.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }

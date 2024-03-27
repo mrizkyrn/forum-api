@@ -153,6 +153,28 @@ describe('/threads endpoint', () => {
       // Assert
       expect(response.statusCode).toEqual(401);
     });
+
+    it('should response 401 when access token not valid', async () => {
+      // Arrange
+      const requestPayload = {
+        title: 'new thread',
+        body: 'content',
+      };
+      const server = await createServer(container);
+
+      // Action
+      const response = await server.inject({
+        method: 'POST',
+        url: '/threads',
+        payload: requestPayload,
+        headers: {
+          Authorization: 'Bearer invalidtoken',
+        },
+      });
+
+      // Assert
+      expect(response.statusCode).toEqual(401);
+    });
   });
 
   describe('when GET /threads/{threadId}', () => {

@@ -1,36 +1,36 @@
-exports.up = pgm => {
+exports.up = (pgm) => {
   pgm.createTable('comments', {
     id: {
       type: 'VARCHAR(50)',
-      primaryKey: true
+      primaryKey: true,
     },
     content: {
       type: 'TEXT',
-      notNull: true
+      notNull: true,
     },
     owner: {
       type: 'VARCHAR(50)',
-      notNull: true
+      notNull: true,
     },
     thread_id: {
       type: 'VARCHAR(50)',
-      notNull: true
+      notNull: true,
     },
     date: {
       type: 'TIMESTAMP',
       notNull: true,
-      default: pgm.func('current_timestamp')
+      default: pgm.func('current_timestamp'),
     },
     is_deleted: {
       type: 'BOOLEAN',
       notNull: true,
-      default: false
-    }
+      default: false,
+    },
   });
   pgm.addConstraint('comments', 'fk_comments.thread_id_threads.id', 'FOREIGN KEY(thread_id) REFERENCES threads(id) ON DELETE CASCADE');
   pgm.addConstraint('comments', 'fk_comments.owner_users.id', 'FOREIGN KEY(owner) REFERENCES users(id) ON DELETE CASCADE');
 };
 
-exports.down = pgm => {
+exports.down = (pgm) => {
   pgm.dropTable('comments');
 };

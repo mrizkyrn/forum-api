@@ -21,7 +21,7 @@ describe('a DetailComment entities', () => {
       date: '2021-08-08T07:22:33.555Z',
       replies: [],
       content: 'abc',
-      is_deleted: 'true',
+      deleted: 'true',
     };
 
     // Action and Assert
@@ -33,14 +33,14 @@ describe('a DetailComment entities', () => {
     const payload = {
       id: 'comment-123',
       username: 'user',
-      date: '2021-08-08T07:22:33.555Z',
+      date: new Date(),
       replies: [],
       content: 'abc',
-      is_deleted: true,
+      deleted: false,
     };
 
     // Action
-    const { id, username, date, replies, content, is_deleted } = new DetailComment(payload);
+    const { id, username, date, replies, content, deleted } = new DetailComment(payload);
 
     // Assert
     expect(id).toEqual(payload.id);
@@ -48,6 +48,6 @@ describe('a DetailComment entities', () => {
     expect(date).toEqual(payload.date);
     expect(replies).toEqual(payload.replies);
     expect(content).toEqual(payload.content);
-    expect(is_deleted).toEqual(payload.is_deleted);
+    expect(deleted).toEqual(payload.deleted);
   });
 });

@@ -1,6 +1,7 @@
 const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
 const NotFoundError = require('../../Commons/exceptions/NotFoundError');
 const AddedReply = require('../../Domains/replies/entities/AddedReply');
+const DetailReply = require('../../Domains/replies/entities/DetailReply');
 const ReplyRepository = require('../../Domains/replies/ReplyRepository');
 
 class ReplyRepositoryPostgres extends ReplyRepository {
@@ -30,7 +31,7 @@ class ReplyRepositoryPostgres extends ReplyRepository {
         r.id as id,
         r.content as content,
         r.date as date,
-        r.is_deleted as is_deleted,
+        r.is_deleted as deleted,
         u.username as username
       FROM replies r
       LEFT JOIN users u ON u.id = r.owner
@@ -41,13 +42,7 @@ class ReplyRepositoryPostgres extends ReplyRepository {
 
     const result = await this._pool.query(query);
 
-    result.rows.forEach((row) => {
-      if (row.is_deleted) {
-        row.content = '**balasan telah dihapus**';
-      }
-    });
-
-    return result.rows;
+    return result.rows.map((row) => new DetailReply({ ...row }));
   }
 
   async deleteReplyById(threadId, commentId, replyId) {

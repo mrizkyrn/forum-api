@@ -13,9 +13,9 @@ describe('DeleteReplyUseCase', () => {
     const deleteReplyUseCase = new DeleteReplyUseCase({});
 
     // Action & Assert
-    await expect(deleteReplyUseCase.execute(useCasePayload)).rejects.toThrowError(
-      'DELETE_REPLY_USE_CASE.NOT_CONTAIN_NEEDED_PROPERTY'
-    );
+    await expect(deleteReplyUseCase.execute(useCasePayload))
+      .rejects
+      .toThrowError('DELETE_REPLY_USE_CASE.NOT_CONTAIN_NEEDED_PROPERTY');
   });
 
   it('should throw error if use case payload not meet data type specification', async () => {
@@ -29,9 +29,9 @@ describe('DeleteReplyUseCase', () => {
     const deleteReplyUseCase = new DeleteReplyUseCase({});
 
     // Action & Assert
-    await expect(deleteReplyUseCase.execute(useCasePayload)).rejects.toThrowError(
-      'DELETE_REPLY_USE_CASE.PAYLOAD_NOT_MEET_DATA_TYPE_SPECIFICATION'
-    );
+    await expect(deleteReplyUseCase.execute(useCasePayload))
+      .rejects
+      .toThrowError('DELETE_REPLY_USE_CASE.PAYLOAD_NOT_MEET_DATA_TYPE_SPECIFICATION');
   });
 
   it('should orchestrating the delete reply action correctly', async () => {
@@ -46,7 +46,7 @@ describe('DeleteReplyUseCase', () => {
     const mockReplyRepository = new ReplyRepository();
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
-    
+
     mockReplyRepository.verifyReplyOwner = jest.fn(() => Promise.resolve());
     mockReplyRepository.deleteReplyById = jest.fn(() => Promise.resolve());
     mockThreadRepository.verifyAvailableThread = jest.fn(() => Promise.resolve());
@@ -68,7 +68,7 @@ describe('DeleteReplyUseCase', () => {
     expect(mockReplyRepository.deleteReplyById).toHaveBeenCalledWith(
       useCasePayload.threadId,
       useCasePayload.commentId,
-      useCasePayload.replyId
+      useCasePayload.replyId,
     );
   });
 });

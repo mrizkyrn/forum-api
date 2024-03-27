@@ -1,4 +1,4 @@
-exports.up = pgm => {
+exports.up = (pgm) => {
   pgm.createTable('threads', {
     id: {
       type: 'VARCHAR(50)',
@@ -26,6 +26,6 @@ exports.up = pgm => {
   pgm.addConstraint('threads', 'fk_threads.owner_users.id', 'FOREIGN KEY(owner) REFERENCES users(id) ON DELETE CASCADE');
 };
 
-exports.down = pgm => {
+exports.down = (pgm) => {
   pgm.dropTable('threads');
 };

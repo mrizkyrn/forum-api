@@ -2,6 +2,7 @@ const InvariantError = require('../../Commons/exceptions/InvariantError');
 const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
 const NotFoundError = require('../../Commons/exceptions/NotFoundError');
 const AddedComment = require('../../Domains/comments/entities/AddedComment');
+const DetailComment = require('../../Domains/comments/entities/DetailComment');
 const CommentRepository = require('../../Domains/comments/CommentRepository');
 
 class CommentRepositoryPostgres extends CommentRepository {
@@ -76,7 +77,7 @@ class CommentRepositoryPostgres extends CommentRepository {
         u.username AS username,
         c.date AS date,
         c.content AS content,
-        c.is_deleted AS is_deleted
+        c.is_deleted AS deleted
       FROM comments c
       LEFT JOIN users u ON c.owner = u.id
       WHERE c.thread_id = $1
@@ -86,13 +87,7 @@ class CommentRepositoryPostgres extends CommentRepository {
 
     const result = await this._pool.query(query);
 
-    result.rows.forEach((row) => {
-      if (row.is_deleted) {
-        row.content = '**komentar telah dihapus**';
-      }
-    });
-
-    return result.rows;
+    return result.rows.map((row) => new DetailComment({ ...row, replies: [] }));
   }
 }
 

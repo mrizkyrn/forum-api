@@ -12,7 +12,9 @@ describe('GetThreadUseCase', () => {
     const getThreadUseCase = new GetThreadUseCase({});
 
     // Action & Assert
-    await expect(getThreadUseCase.execute(useCasePayload)).rejects.toThrowError('GET_THREAD_USE_CASE.NOT_CONTAIN_NEEDED_PROPERTY');
+    await expect(getThreadUseCase.execute(useCasePayload))
+      .rejects
+      .toThrowError('GET_THREAD_USE_CASE.NOT_CONTAIN_NEEDED_PROPERTY');
   });
 
   it('should throw error if use case payload not meet data type specification', async () => {
@@ -23,7 +25,9 @@ describe('GetThreadUseCase', () => {
     const getThreadUseCase = new GetThreadUseCase({});
 
     // Action & Assert
-    await expect(getThreadUseCase.execute(useCasePayload)).rejects.toThrowError('GET_THREAD_USE_CASE.PAYLOAD_NOT_MEET_DATA_TYPE_SPECIFICATION');
+    await expect(getThreadUseCase.execute(useCasePayload))
+      .rejects
+      .toThrowError('GET_THREAD_USE_CASE.PAYLOAD_NOT_MEET_DATA_TYPE_SPECIFICATION');
   });
 
   it('should orchestrating the get thread action correctly', async () => {
@@ -35,7 +39,7 @@ describe('GetThreadUseCase', () => {
       id: useCasePayload.threadId,
       title: 'judul thread',
       body: 'body thread',
-      date: '2021-08-08T07:22:13.017Z',
+      date: new Date(),
       username: 'dicoding',
       comments: [],
     });
@@ -43,18 +47,18 @@ describe('GetThreadUseCase', () => {
       new DetailComment({
         id: 'comment-123',
         username: 'rizky',
-        date: '2021-08-08T07:23:13.017Z',
+        date: new Date(),
         replies: [],
         content: 'Hello',
-        is_deleted: false,
+        deleted: false,
       }),
       new DetailComment({
         id: 'comment-124',
         username: 'ramadhan',
-        date: '2021-08-08T07:24:13.017Z',
+        date: new Date(),
         replies: [],
         content: 'Hello',
-        is_deleted: false,
+        deleted: false,
       }),
     ];
 
@@ -62,9 +66,12 @@ describe('GetThreadUseCase', () => {
     const mockCommentRepository = new CommentRepository();
     const mockReplyRepository = new ReplyRepository();
 
-    mockThreadRepository.getThreadById = jest.fn(() => Promise.resolve(expectedThread));
-    mockCommentRepository.getCommentsByThreadId = jest.fn(() => Promise.resolve(expectedComments));
-    mockReplyRepository.getRepliesByCommentId = jest.fn(() => Promise.resolve([]));
+    mockThreadRepository.getThreadById = jest.fn()
+      .mockImplementation(() => Promise.resolve(expectedThread));
+    mockCommentRepository.getCommentsByThreadId = jest.fn()
+      .mockImplementation(() => Promise.resolve(expectedComments));
+    mockReplyRepository.getRepliesByCommentId = jest.fn()
+      .mockImplementation(() => Promise.resolve([]));
 
     const getThreadUseCase = new GetThreadUseCase({
       threadRepository: mockThreadRepository,

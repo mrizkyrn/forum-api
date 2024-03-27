@@ -10,14 +10,15 @@ class GetThreadUseCase {
     const { threadId } = useCasePayload;
     const thread = await this._threadRepository.getThreadById(threadId);
     const comments = await this._commentRepository.getCommentsByThreadId(threadId);
-    for (const comment of comments) {
-      const replies = await this._replyRepository.getRepliesByCommentId(comment.id);
-      comment.replies = replies;
-    }
-    return {
-      ...thread,
-      comments,
-    };
+    const commentsWithReplies = await Promise.all(
+      comments.map(async (comment) => {
+        const replies = await this._replyRepository.getRepliesByCommentId(comment.id);
+        comment.replies = replies;
+        return comment;
+      }),
+    );
+
+    return { ...thread, comments: commentsWithReplies };
   }
 
   _verifyPayload(payload) {

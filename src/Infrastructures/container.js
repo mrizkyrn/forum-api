@@ -315,7 +315,7 @@ container.register([
         },
       ],
     },
-  }
+  },
 ]);
 
 module.exports = container;

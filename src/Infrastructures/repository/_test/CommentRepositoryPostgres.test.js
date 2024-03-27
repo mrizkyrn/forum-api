@@ -4,6 +4,7 @@ const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper
 const pool = require('../../database/postgres/pool');
 const NewComment = require('../../../Domains/comments/entities/NewComment');
 const AddedComment = require('../../../Domains/comments/entities/AddedComment');
+const DetailComment = require('../../../Domains/comments/entities/DetailComment');
 const CommentRepositoryPostgres = require('../CommentRepositoryPostgres');
 
 describe('CommentRepositoryPostgres', () => {
@@ -45,7 +46,7 @@ describe('CommentRepositoryPostgres', () => {
           id: 'comment-123',
           content: newComment.content,
           owner: newComment.owner,
-        })
+        }),
       );
     });
   });
@@ -69,9 +70,9 @@ describe('CommentRepositoryPostgres', () => {
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool);
 
       // Action & Assert
-      await expect(commentRepositoryPostgres.deleteCommentById('thread-123', 'comment-123')).rejects.toThrowError(
-        'komentar tidak ditemukan'
-      );
+      await expect(commentRepositoryPostgres.deleteCommentById('thread-123', 'comment-123'))
+        .rejects
+        .toThrowError('komentar tidak ditemukan');
     });
   });
 
@@ -82,9 +83,9 @@ describe('CommentRepositoryPostgres', () => {
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool);
 
       // Action & Assert
-      await expect(commentRepositoryPostgres.verifyCommentOwner('comment-123', 'user-124')).rejects.toThrowError(
-        'anda tidak berhak mengakses resource ini'
-      );
+      await expect(commentRepositoryPostgres.verifyCommentOwner('comment-123', 'user-124'))
+        .rejects
+        .toThrowError('anda tidak berhak mengakses resource ini');
     });
 
     it('should not throw error when comment owned by owner', async () => {
@@ -93,9 +94,9 @@ describe('CommentRepositoryPostgres', () => {
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool);
 
       // Action & Assert
-      await expect(commentRepositoryPostgres.verifyCommentOwner('comment-123', 'user-123')).resolves.not.toThrowError(
-        'anda tidak berhak mengakses resource ini'
-      );
+      await expect(commentRepositoryPostgres.verifyCommentOwner('comment-123', 'user-123'))
+        .resolves.not
+        .toThrowError('anda tidak berhak mengakses resource ini');
     });
 
     it('should throw error when comment not available', async () => {
@@ -103,9 +104,9 @@ describe('CommentRepositoryPostgres', () => {
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool);
 
       // Action & Assert
-      await expect(commentRepositoryPostgres.verifyCommentOwner('comment-123', 'user-123')).rejects.toThrowError(
-        'komentar tidak ditemukan'
-      );
+      await expect(commentRepositoryPostgres.verifyCommentOwner('comment-123', 'user-123'))
+        .rejects
+        .toThrowError('komentar tidak ditemukan');
     });
   });
 
@@ -115,9 +116,9 @@ describe('CommentRepositoryPostgres', () => {
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool);
 
       // Action & Assert
-      await expect(commentRepositoryPostgres.verifyAvailableComment('comment-123')).rejects.toThrowError(
-        'komentar tidak ditemukan'
-      );
+      await expect(commentRepositoryPostgres.verifyAvailableComment('comment-123'))
+        .rejects
+        .toThrowError('komentar tidak ditemukan');
     });
 
     it('should not throw error when comment available', async () => {
@@ -126,9 +127,9 @@ describe('CommentRepositoryPostgres', () => {
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool);
 
       // Action & Assert
-      await expect(commentRepositoryPostgres.verifyAvailableComment('comment-123')).resolves.not.toThrowError(
-        'komentar tidak ditemukan'
-      );
+      await expect(commentRepositoryPostgres.verifyAvailableComment('comment-123'))
+        .resolves.not
+        .toThrowError('komentar tidak ditemukan');
     });
   });
 
@@ -143,7 +144,7 @@ describe('CommentRepositoryPostgres', () => {
         owner: 'user-123',
         threadId: 'thread-123',
         date: date1,
-        isDeleted: true,
+        deleted: true,
       });
       await CommentsTableTestHelper.addComment({
         id: 'comment-124',
@@ -161,20 +162,22 @@ describe('CommentRepositoryPostgres', () => {
       // Assert
       expect(comments).toHaveLength(2);
       expect(comments).toStrictEqual([
-        {
+        new DetailComment({
           id: 'comment-123',
           username: 'rizky',
           date: date1,
           content: '**komentar telah dihapus**',
-          is_deleted: true,
-        },
-        {
+          replies: [],
+          deleted: true,
+        }),
+        new DetailComment({
           id: 'comment-124',
           username: 'ramadhan',
           date: date2,
           content: 'comment 2',
-          is_deleted: false,
-        },
+          replies: [],
+          deleted: false,
+        }),
       ]);
     });
 

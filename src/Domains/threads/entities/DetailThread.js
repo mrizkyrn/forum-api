@@ -18,12 +18,12 @@ class DetailThread {
     }
 
     if (
-      typeof id !== 'string' ||
-      typeof title !== 'string' ||
-      typeof body !== 'string' ||
-      typeof date !== 'string' ||
-      typeof username !== 'string' ||
-      !Array.isArray(comments)
+      typeof id !== 'string'
+      || typeof title !== 'string'
+      || typeof body !== 'string'
+      || !(date instanceof Date)
+      || typeof username !== 'string'
+      || !Array.isArray(comments)
     ) {
       throw new Error('DETAIL_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }
