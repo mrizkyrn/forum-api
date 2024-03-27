@@ -43,14 +43,14 @@ describe('DeleteReplyUseCase', () => {
       owner: 'user-123',
     };
 
-    const mockReplyRepository = new ReplyRepository();
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
+    const mockReplyRepository = new ReplyRepository();
 
-    mockReplyRepository.verifyReplyOwner = jest.fn(() => Promise.resolve());
-    mockReplyRepository.deleteReplyById = jest.fn(() => Promise.resolve());
     mockThreadRepository.verifyAvailableThread = jest.fn(() => Promise.resolve());
     mockCommentRepository.verifyAvailableComment = jest.fn(() => Promise.resolve());
+    mockReplyRepository.verifyReplyOwner = jest.fn(() => Promise.resolve());
+    mockReplyRepository.deleteReplyById = jest.fn(() => Promise.resolve());
 
     const deleteReplyUseCase = new DeleteReplyUseCase({
       replyRepository: mockReplyRepository,

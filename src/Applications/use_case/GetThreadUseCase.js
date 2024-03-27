@@ -17,8 +17,9 @@ class GetThreadUseCase {
         return comment;
       }),
     );
+    thread.comments = commentsWithReplies;
 
-    return { ...thread, comments: commentsWithReplies };
+    return thread;
   }
 
   _verifyPayload(payload) {

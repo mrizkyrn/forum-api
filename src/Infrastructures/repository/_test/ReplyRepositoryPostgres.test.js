@@ -6,6 +6,8 @@ const pool = require('../../database/postgres/pool');
 const NewReply = require('../../../Domains/replies/entities/NewReply');
 const AddedReply = require('../../../Domains/replies/entities/AddedReply');
 const DetailReply = require('../../../Domains/replies/entities/DetailReply');
+const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
+const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError');
 const ReplyRepositoryPostgres = require('../ReplyRepositoryPostgres');
 
 describe('ReplyRepositoryPostgres', () => {
@@ -141,7 +143,7 @@ describe('ReplyRepositoryPostgres', () => {
       // Action & Assert
       await expect(replyRepositoryPostgres.deleteReplyById('thread-123', 'comment-123', 'reply-124'))
         .rejects
-        .toThrowError('balasan tidak ditemukan');
+        .toThrowError(NotFoundError);
     });
   });
 
@@ -153,7 +155,7 @@ describe('ReplyRepositoryPostgres', () => {
       // Action & Assert
       await expect(replyRepositoryPostgres.verifyReplyAvailable('reply-123'))
         .rejects
-        .toThrowError('balasan tidak ditemukan');
+        .toThrowError(NotFoundError);
     });
 
     it('should not throw error when reply available', async () => {
@@ -164,7 +166,7 @@ describe('ReplyRepositoryPostgres', () => {
       // Action & Assert
       await expect(replyRepositoryPostgres.verifyReplyAvailable('reply-123'))
         .resolves.not
-        .toThrowError('balasan tidak ditemukan');
+        .toThrowError(NotFoundError);
     });
   });
 
@@ -177,7 +179,7 @@ describe('ReplyRepositoryPostgres', () => {
       // Action & Assert
       await expect(replyRepositoryPostgres.verifyReplyOwner('reply-123', 'user-124'))
         .rejects
-        .toThrowError('anda tidak berhak mengakses resource ini');
+        .toThrowError(AuthorizationError);
     });
 
     it('should not throw error when reply owned by owner', async () => {
@@ -188,7 +190,7 @@ describe('ReplyRepositoryPostgres', () => {
       // Action & Assert
       await expect(replyRepositoryPostgres.verifyReplyOwner('reply-123', 'user-123'))
         .resolves.not
-        .toThrowError('anda tidak berhak mengakses resource ini');
+        .toThrowError(AuthorizationError);
     });
 
     it('should throw error when reply not available', async () => {
@@ -198,7 +200,7 @@ describe('ReplyRepositoryPostgres', () => {
       // Action & Assert
       await expect(replyRepositoryPostgres.verifyReplyOwner('reply-123', 'user-123'))
         .rejects
-        .toThrowError('balasan tidak ditemukan');
+        .toThrowError(NotFoundError);
     });
   });
 });

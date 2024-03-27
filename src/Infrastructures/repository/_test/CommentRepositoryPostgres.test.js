@@ -5,6 +5,8 @@ const pool = require('../../database/postgres/pool');
 const NewComment = require('../../../Domains/comments/entities/NewComment');
 const AddedComment = require('../../../Domains/comments/entities/AddedComment');
 const DetailComment = require('../../../Domains/comments/entities/DetailComment');
+const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
+const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError');
 const CommentRepositoryPostgres = require('../CommentRepositoryPostgres');
 
 describe('CommentRepositoryPostgres', () => {
@@ -72,7 +74,7 @@ describe('CommentRepositoryPostgres', () => {
       // Action & Assert
       await expect(commentRepositoryPostgres.deleteCommentById('thread-123', 'comment-123'))
         .rejects
-        .toThrowError('komentar tidak ditemukan');
+        .toThrowError(NotFoundError);
     });
   });
 
@@ -85,7 +87,7 @@ describe('CommentRepositoryPostgres', () => {
       // Action & Assert
       await expect(commentRepositoryPostgres.verifyCommentOwner('comment-123', 'user-124'))
         .rejects
-        .toThrowError('anda tidak berhak mengakses resource ini');
+        .toThrowError(AuthorizationError);
     });
 
     it('should not throw error when comment owned by owner', async () => {
@@ -96,7 +98,7 @@ describe('CommentRepositoryPostgres', () => {
       // Action & Assert
       await expect(commentRepositoryPostgres.verifyCommentOwner('comment-123', 'user-123'))
         .resolves.not
-        .toThrowError('anda tidak berhak mengakses resource ini');
+        .toThrowError(AuthorizationError);
     });
 
     it('should throw error when comment not available', async () => {
@@ -106,7 +108,7 @@ describe('CommentRepositoryPostgres', () => {
       // Action & Assert
       await expect(commentRepositoryPostgres.verifyCommentOwner('comment-123', 'user-123'))
         .rejects
-        .toThrowError('komentar tidak ditemukan');
+        .toThrowError(NotFoundError);
     });
   });
 
@@ -118,7 +120,7 @@ describe('CommentRepositoryPostgres', () => {
       // Action & Assert
       await expect(commentRepositoryPostgres.verifyAvailableComment('comment-123'))
         .rejects
-        .toThrowError('komentar tidak ditemukan');
+        .toThrowError(NotFoundError);
     });
 
     it('should not throw error when comment available', async () => {
@@ -129,7 +131,7 @@ describe('CommentRepositoryPostgres', () => {
       // Action & Assert
       await expect(commentRepositoryPostgres.verifyAvailableComment('comment-123'))
         .resolves.not
-        .toThrowError('komentar tidak ditemukan');
+        .toThrowError(NotFoundError);
     });
   });
 

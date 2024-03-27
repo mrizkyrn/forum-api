@@ -35,7 +35,7 @@ describe('GetThreadUseCase', () => {
     const useCasePayload = {
       threadId: 'thread-123',
     };
-    const expectedThread = new DetailThread({
+    const mockDetailThread = new DetailThread({
       id: useCasePayload.threadId,
       title: 'judul thread',
       body: 'body thread',
@@ -43,7 +43,7 @@ describe('GetThreadUseCase', () => {
       username: 'dicoding',
       comments: [],
     });
-    const expectedComments = [
+    const mockDetailComment = [
       new DetailComment({
         id: 'comment-123',
         username: 'rizky',
@@ -67,9 +67,9 @@ describe('GetThreadUseCase', () => {
     const mockReplyRepository = new ReplyRepository();
 
     mockThreadRepository.getThreadById = jest.fn()
-      .mockImplementation(() => Promise.resolve(expectedThread));
+      .mockImplementation(() => Promise.resolve(mockDetailThread));
     mockCommentRepository.getCommentsByThreadId = jest.fn()
-      .mockImplementation(() => Promise.resolve(expectedComments));
+      .mockImplementation(() => Promise.resolve(mockDetailComment));
     mockReplyRepository.getRepliesByCommentId = jest.fn()
       .mockImplementation(() => Promise.resolve([]));
 
@@ -83,13 +83,34 @@ describe('GetThreadUseCase', () => {
     const thread = await getThreadUseCase.execute(useCasePayload);
 
     // Assert
-    expect(thread).toStrictEqual({
-      ...expectedThread,
-      comments: expectedComments,
-    });
+    expect(thread).toStrictEqual(new DetailThread({
+      id: useCasePayload.threadId,
+      title: 'judul thread',
+      body: 'body thread',
+      date: mockDetailThread.date,
+      username: 'dicoding',
+      comments: [
+        new DetailComment({
+          id: 'comment-123',
+          username: 'rizky',
+          date: mockDetailComment[0].date,
+          replies: [],
+          content: 'Hello',
+          deleted: false,
+        }),
+        new DetailComment({
+          id: 'comment-124',
+          username: 'ramadhan',
+          date: mockDetailComment[1].date,
+          replies: [],
+          content: 'Hello',
+          deleted: false,
+        }),
+      ],
+    }));
     expect(mockThreadRepository.getThreadById).toBeCalledWith(useCasePayload.threadId);
     expect(mockCommentRepository.getCommentsByThreadId).toBeCalledWith(useCasePayload.threadId);
-    expect(mockReplyRepository.getRepliesByCommentId).toBeCalledWith(expectedComments[0].id);
-    expect(mockReplyRepository.getRepliesByCommentId).toBeCalledWith(expectedComments[1].id);
+    expect(mockReplyRepository.getRepliesByCommentId).toBeCalledWith('comment-123');
+    expect(mockReplyRepository.getRepliesByCommentId).toBeCalledWith('comment-124');
   });
 });

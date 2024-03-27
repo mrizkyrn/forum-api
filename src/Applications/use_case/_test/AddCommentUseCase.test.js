@@ -1,6 +1,7 @@
 const NewComment = require('../../../Domains/comments/entities/NewComment');
 const AddedComment = require('../../../Domains/comments/entities/AddedComment');
 const CommentRepository = require('../../../Domains/comments/CommentRepository');
+const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
 const AddCommentUseCase = require('../AddCommentUseCase');
 
 describe('AddCommentUseCase', () => {
@@ -11,18 +12,17 @@ describe('AddCommentUseCase', () => {
       owner: 'user-123',
       threadId: 'thread-123',
     };
-    const expectedAddedComment = new AddedComment({
+    const mockAddedComment = new AddedComment({
       id: 'comment-123',
       content: useCasePayload.content,
       owner: useCasePayload.owner,
     });
 
+    const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
-    const mockThreadRepository = {
-      verifyAvailableThread: jest.fn(() => Promise.resolve()),
-    };
 
-    mockCommentRepository.addComment = jest.fn(() => Promise.resolve(expectedAddedComment));
+    mockThreadRepository.verifyAvailableThread = jest.fn(() => Promise.resolve());
+    mockCommentRepository.addComment = jest.fn(() => Promise.resolve(mockAddedComment));
 
     const addCommentUseCase = new AddCommentUseCase({
       commentRepository: mockCommentRepository,
@@ -33,8 +33,12 @@ describe('AddCommentUseCase', () => {
     const addedComment = await addCommentUseCase.execute(useCasePayload);
 
     // Assert
-    expect(addedComment).toStrictEqual(expectedAddedComment);
-    expect(mockCommentRepository.addComment).toBeCalledWith(new NewComment(useCasePayload));
+    expect(addedComment).toStrictEqual(new AddedComment({
+      id: 'comment-123',
+      content: useCasePayload.content,
+      owner: useCasePayload.owner,
+    }));
     expect(mockThreadRepository.verifyAvailableThread).toBeCalledWith(useCasePayload.threadId);
+    expect(mockCommentRepository.addComment).toBeCalledWith(new NewComment(useCasePayload));
   });
 });
