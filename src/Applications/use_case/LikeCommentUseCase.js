@@ -9,6 +9,12 @@ class LikeCommentUseCase {
     this._validatePayload(useCasePayload);
     await this._threadRepository.verifyAvailableThread(useCasePayload.threadId);
     await this._commentRepository.verifyAvailableComment(useCasePayload.commentId);
+
+    const isLikeExist = await this._likeRepository.isLikeExist(useCasePayload.commentId, useCasePayload.owner);
+    if (isLikeExist) {
+      return this._likeRepository.deleteLike(useCasePayload.commentId, useCasePayload.owner);
+    }
+    return this._likeRepository.addLike(useCasePayload.commentId, useCasePayload.owner);
   }
 
   _validatePayload(payload) {
