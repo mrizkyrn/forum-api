@@ -51,6 +51,7 @@ describe('GetThreadUseCase', () => {
         replies: [],
         content: 'Hello',
         deleted: false,
+        likeCount: 0,
       }),
       new DetailComment({
         id: 'comment-124',
@@ -59,6 +60,7 @@ describe('GetThreadUseCase', () => {
         replies: [],
         content: 'Hello',
         deleted: false,
+        likeCount: 0,
       }),
     ];
 
@@ -97,6 +99,7 @@ describe('GetThreadUseCase', () => {
           replies: [],
           content: 'Hello',
           deleted: false,
+          likeCount: 0,
         }),
         new DetailComment({
           id: 'comment-124',
@@ -105,6 +108,7 @@ describe('GetThreadUseCase', () => {
           replies: [],
           content: 'Hello',
           deleted: false,
+          likeCount: 0,
         }),
       ],
     }));

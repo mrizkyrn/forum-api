@@ -44,6 +44,14 @@ const routes = (handler) => [
       handler: handler.deleteReplyHandler,
     },
   },
+  {
+    method: 'PUT',
+    path: '/threads/{threadId}/comments/{commentId}/likes',
+    options: {
+      auth: 'forumapi_jwt',
+      handler: handler.likeCommentHandler,
+    },
+  },
 ];
 
 module.exports = routes;

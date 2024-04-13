@@ -22,6 +22,7 @@ describe('a DetailComment entities', () => {
       replies: [],
       content: 'abc',
       deleted: 'true',
+      likeCount: '1',
     };
 
     // Action and Assert
@@ -37,10 +38,11 @@ describe('a DetailComment entities', () => {
       replies: [],
       content: 'abc',
       deleted: false,
+      likeCount: 1,
     };
 
     // Action
-    const { id, username, date, replies, content, deleted } = new DetailComment(payload);
+    const { id, username, date, replies, content, deleted, likeCount } = new DetailComment(payload);
 
     // Assert
     expect(id).toEqual(payload.id);
@@ -49,6 +51,7 @@ describe('a DetailComment entities', () => {
     expect(replies).toEqual(payload.replies);
     expect(content).toEqual(payload.content);
     expect(deleted).toEqual(payload.deleted);
+    expect(likeCount).toEqual(payload.likeCount);
   });
 
   it('should create DetailComment object correctly with deleted status', () => {
@@ -60,12 +63,13 @@ describe('a DetailComment entities', () => {
       replies: [],
       content: 'abc',
       deleted: true,
+      likeCount: 1,
     };
 
     const expectedDeletedStatus = '**komentar telah dihapus**';
 
     // Action
-    const { id, username, date, replies, content, deleted } = new DetailComment(payload);
+    const { id, username, date, replies, content, deleted, likeCount } = new DetailComment(payload);
 
     // Assert
     expect(id).toEqual(payload.id);
@@ -74,5 +78,6 @@ describe('a DetailComment entities', () => {
     expect(replies).toEqual(payload.replies);
     expect(content).toEqual(expectedDeletedStatus);
     expect(deleted).toEqual(payload.deleted);
+    expect(likeCount).toEqual(payload.likeCount);
   });
 });
