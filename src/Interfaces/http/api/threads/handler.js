@@ -106,7 +106,15 @@ class ThreadsHandler {
   }
 
   async likeCommentHandler(request, h) {
-    
+    const { id: owner } = request.auth.credentials;
+    const { threadId, commentId } = request.params;
+
+    const likeCommentUseCase = this._container.getInstance(LikeCommentUseCase.name);
+    await likeCommentUseCase.execute({ owner, threadId, commentId });
+
+    return {
+      status: 'success',
+    };
   }
 }
 
