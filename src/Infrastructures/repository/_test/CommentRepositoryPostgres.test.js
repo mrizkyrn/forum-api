@@ -171,6 +171,7 @@ describe('CommentRepositoryPostgres', () => {
           content: '**komentar telah dihapus**',
           replies: [],
           deleted: true,
+          likeCount: 0,
         }),
         new DetailComment({
           id: 'comment-124',
@@ -179,6 +180,7 @@ describe('CommentRepositoryPostgres', () => {
           content: 'comment 2',
           replies: [],
           deleted: false,
+          likeCount: 0,
         }),
       ]);
     });
